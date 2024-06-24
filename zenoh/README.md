@@ -72,22 +72,30 @@ After you have finished the machine's physical calibration process (moving all j
 
 
 ### Running clinet(using sample config file):
+First, run *run_server.py* in a terminal with sample config file
 ```
 python run_server.py ./config/config_GR1_T1.yaml
-python robot_client.py ./config/config_GR1_T1.yaml
-```    
+```
+Open second terminal, activate the environment and run robot_client
+```
+python robot_client.py
+```   
 
 After client has been poped out, type **set_home** to use set_home function, and it will get sensor offsets and save to `sensor_offset.json`, the file could be used to calibrating the robot. 
 
 ## Robot Client
 ### Running clinet(using sample config file):
+First, run *run_server.py* in a terminal with sample config file
 ```
 python run_server.py ./config/config_GR1_T1.yaml
-python robot_client.py ./config/config_GR1_T1.yaml
-```    
+```
+Open second terminal, activate the environment and run robot_client
+```
+python robot_client.py
+``` 
 
 ### Function Explanation
-When running robot_client scripts, it will pop up a robot client panel in the command window. There are ten selections for the user to choose from. Type out the name and press Enter to select and use different functions:
+When running robot_client scripts, it will pop up a robot client panel in the command window. There are eleven selections for the user to choose from. Type out the name and press Enter to select and use different functions:
 
 a. "Enable": Enable the force applied to the motor; the motor cannot move freely.
 
@@ -95,19 +103,21 @@ b. "Disable": Disable the force applied to the motor; the robot arm can move fre
 
 c. "Set_Home": This function will be used during the calibration task before any work starts. It will get sensor offsets and save them to `sensor_offset.json`. This file can be used to calibrate all the absolute encoders.
 
-d. "Set_Zero": Reboot all the motors and go back to the zero position.
+d. "set_gains": Setting the PD parameter for motors
 
-e. "Print_States": Print out the motor status and information.
+e. "reboot": Reboot all the motors and go back to the zero position.
 
-f. "Move_to_Default": Move the joint to the default position.
+f. "Print_States": Print out the motor status and information.
 
-g. "Record": Record the movement of the robot joint as an .npy file.
+g. "Move_to_Default": Move the joint to the default position.
 
-h. "Play": Replay the task recorded in the record.npy file from the "Record" function.
+h. "Record": Record the movement of the robot joint as an .npy file.
 
-i. "Abort": Stop any movement that the robot is doing at the moment.
+i. "Play": Replay the task recorded in the record.npy file from the "Record" function.
 
-j. "Exit": Exit the robot client panel.
+j. "Abort": Stop any movement that the robot is doing at the moment.
+
+k. "Exit": Exit the robot client panel.
 
 
 ### Detailed explanation
