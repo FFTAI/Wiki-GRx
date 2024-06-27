@@ -8,70 +8,52 @@ from rich.console import Console
 from rich.pretty import pprint
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
+
 from robot_rcs_gr.sdk import ControlGroup, RobotClient
 
 m.patch() # Patch msgpack_numpy to handle numpy arrays
 
-zenoh.init_logger()# Initialize zenoh logger
+zenoh.init_logger() # Initialize zenoh logger
 
 # Initialize console for rich logging and printing
 console = Console()
 log = console.log
 print = console.print
 
-# Set control frequency
-FREQ = 150
 
+FREQUENCY = 150 # Set control frequency
 
+# Enable the force applied into motor
 def task_enable(client: RobotClient):
     client.set_enable(True)
 
 
+# Disable the force applied into motor
 def task_disable(client: RobotClient):
     client.set_enable(False)
 
 
+# Set sensor offsets and save to `sensor_offset.json`
 def task_set_home(client: RobotClient):
     client.set_home()
 
 
+# Get PD parameter of the motor
+def task_set_gains(client: RobotClient):
+    kp = np.array([0.1] * 32)
+    kd = np.array([0.01] * 32)
+
+    # Set PD parameters
+    new_gains = client.set_gains(kp, kd)
+    print(new_gains)
+
+
+# Reboot all the motor and go back to zero position
 def task_reboot(client: RobotClient):
     client.reboot()
 
 
-def task_move_left_arm_to_default(client: RobotClient):
-    client.set_enable(True)
-    time.sleep(0.5)
-
-    # Move LEFT_ARM joint to default position that predefined for each robot
-    # while blocking = False: means user could not use any function before the movement done
-    client.move_joints(
-        ControlGroup.LEFT_ARM,
-        client.default_group_positions[ControlGroup.LEFT_ARM],
-        2.0,
-        blocking=False,
-    )
-
-
-def task_move_to_default(client: RobotClient):
-    client.set_enable(True)
-    time.sleep(0.5)
-
-    # Move all joints to default position that defined for each robot
-    # while blocking = False: means user could not use any function before the movement done
-    client.move_joints(
-        ControlGroup.UPPER,
-        client.default_group_positions[ControlGroup.UPPER],
-        2.0,
-        blocking=False,
-    )
-
-
-def task_abort(client: RobotClient):
-    client.abort()
-
-
-# Check and print out motor status and informations
+# Print out the motor status and information
 def task_print_states(client: RobotClient):
     table = Table("Type", "Data", title="Current :robot: state")
     for sensor_type, sensor_data in client.states.items():
@@ -84,6 +66,38 @@ def task_print_states(client: RobotClient):
     print(table)
 
 
+'''
+Move_joint function:
+Three argument: joint position, time duration for movement, and blocking
+Notice: Could access other funciton while blcoking = True
+time duration will change the robot moving speed, it means the time that robot take to finish the task
+'''
+# Move joint to default position
+def task_move_to_default(client: RobotClient):
+    client.set_enable(True)
+    time.sleep(0.5)
+    # Move joint in the UPPER group
+    client.move_joints(
+        ControlGroup.UPPER,
+        client.default_group_positions[ControlGroup.UPPER],
+        2.0,
+        blocking=False,
+    )
+
+# Similar to move_to_default, move left arm to default position
+def task_move_left_arm_to_default(client: RobotClient):
+    client.set_enable(True)
+    time.sleep(0.5)
+    # Move joint in the LEFT_ARM group
+    client.move_joints(
+        ControlGroup.LEFT_ARM,
+        client.default_group_positions[ControlGroup.LEFT_ARM],
+        2.0,
+        blocking=False,
+    )
+
+
+# Recording the movement of the robot joint as a npy file
 def record(client: RobotClient):
     '''
     How to use the record function:
@@ -92,21 +106,19 @@ def record(client: RobotClient):
     3. Move to the final position and press enter again to finish recording.
     4. The trajectory will be stored as a npy file; use play to replay it.
     '''
-
     traj = []
-    client.set_enable(False) # Disable the force applied to the motor so the robot can move freely
-    
+    client.set_enable(False)
+
     time.sleep(1)
 
     # Prompt user to move to start position
     reply = Prompt.ask("Move to start position and press enter")
     if reply == "":
-        client.update_pos() # Update position before enabling the motor
+        # Update position before enabling the motor
+        client.update_pos()
         time.sleep(0.1)
-        client.set_enable(True) # Enable force applied into motor, and motor could not move freely 
+        client.set_enable(True)
         time.sleep(1)
-
-        # Confirm if the user wants to start recording
         for sensor_type, sensor_data in client.states.items():
             for sensor_name, sensor_reading in sensor_data.items():
                 if sensor_type == "joint":
@@ -120,13 +132,11 @@ def record(client: RobotClient):
 
     if not reply:
         return
-    
-    
+
     # client.update_pos()
     client.set_enable(False)
     time.sleep(1)
     event = threading.Event()
-
     '''
     Two threads aiming to:
     1. Keep adding the joint positions to the traj list.
@@ -160,12 +170,13 @@ def record(client: RobotClient):
         np.save("record.npy", traj)
         return traj
 
-
+# Call record function
 def task_record(client: RobotClient):
     traj = record(client)
-    print(traj)
+    pprint(traj)
 
 
+# Replay the task recorded in the record function
 def play(recorded_traj: list[np.ndarray], client: RobotClient):
     '''
     Move_joint function:
@@ -179,32 +190,40 @@ def play(recorded_traj: list[np.ndarray], client: RobotClient):
 
     # Move to the first position
     first = recorded_traj[0]
-    
     client.move_joints(ControlGroup.ALL, first, 2.0, blocking=True)
 
     # Move along the trajectory stored in the list
     for pos in recorded_traj[1:]:
-        client.move_to(pos)
-        time.sleep(1 / FREQ)
+        client.move_joints(ControlGroup.ALL, pos, duration=0.0)
+        time.sleep(1 / FREQUENCY)
     time.sleep(1)
     client.set_enable(False)
 
-
+# Call play function
 def task_play(client: RobotClient):
-    # Load npy file and repaly the trajectory recorded from record function
+    # Load npy file repaly the trajectory recorded from record function
     rec = np.load("record.npy", allow_pickle=True)
     play(rec, client)
 
 
-def task_set_gains(client: RobotClient):
-    kp = np.array([0.1] * 32)
-    kd = np.array([0.01] * 32)
-
-    # Set PD parameters
-    new_gains = client.set_gains(kp, kd)
-    print(new_gains)
+# Stop any movement that robot is doing right now
+def task_abort(client: RobotClient):
+    client.abort()
 
 
+# List all the links and joint from robot URDF 
+def task_list_frames(client: RobotClient):
+    frames = client.list_frames()
+    print(frames)
+
+
+# Get Transformation from one link to another one
+def task_get_transform(client: RobotClient):
+    transform = client.get_transform("base", "l_wrist_roll")
+    print(f"Transform from base to l_wrist_roll: {transform}")
+
+
+# Exit the client
 def task_exit(client: RobotClient):
     import sys
 
@@ -213,7 +232,7 @@ def task_exit(client: RobotClient):
 
 
 if __name__ == "__main__":
-    client = RobotClient(FREQ)
+    client = RobotClient(FREQUENCY)
     time.sleep(0.5)
     while True:
         task = Prompt.ask(
@@ -229,7 +248,9 @@ if __name__ == "__main__":
                 "record", # Recording the movement of the robot joint as a npy file
                 "play", # Replay the task recorded in the record.npy
                 "abort", # Stop any movement that robot is doing right now
-                "exit", # Exit the robot client control
+                "list_frames",  # List all the links and joint from robot URDF 
+                "get_transform", # Get Transformation from one link to another one
+                "exit", # Exit the client
             ],
         )
         if task == "enable":
@@ -254,10 +275,13 @@ if __name__ == "__main__":
             task_play(client)
         elif task == "exit":
             task_exit(client)
+        elif task == "list_frames":
+            task_list_frames(client)
+        elif task == "get_transform":
+            task_get_transform(client)
 
         time.sleep(0.5)
 
     # client.spin()
     # time.sleep(1)
     # client.set_enable(False)
-
