@@ -23,7 +23,7 @@ comm:
 operator:
   use_joystick: false
   joystick_connected: false
-  joystick_type: "XBOX"
+  joystick_type: "XBOX"  # support "XBOS", "PS4", "PS5"
   use_keyboard: false
   keyboard_connected: false
 
@@ -75,6 +75,15 @@ fi_fsa:
 
 actuator:
   type: "FIFSAV1"
+  use_dic: false
+  names: [
+      "l_hip_roll", "l_hip_yaw", "l_hip_pitch", "l_knee_pitch", "l_ankle_pitch", "l_ankle_roll",
+      "r_hip_roll", "r_hip_yaw", "r_hip_pitch", "r_knee_pitch", "r_ankle_pitch", "r_ankle_roll",
+      "joint_waist_yaw", "joint_waist_pitch", "joint_waist_roll",
+      "joint_head_pitch", "joint_head_roll", "joint_head_yaw",
+      "l_shoulder_pitch", "l_shoulder_roll", "l_shoulder_yaw", "l_elbow_pitch", "l_wrist_yaw", "l_wrist_roll", "l_wrist_pitch",
+      "r_shoulder_pitch", "r_shoulder_roll", "r_shoulder_yaw", "r_elbow_pitch", "r_wrist_yaw", "r_wrist_roll", "r_wrist_pitch",
+  ]
   ip: [
     # left leg
     "192.168.137.70", "192.168.137.71", "192.168.137.72", "192.168.137.73", "192.168.137.74", "192.168.137.75",
@@ -91,17 +100,17 @@ actuator:
   ]
   comm_enable: [
     # left leg
-    true, true, true, true, true, true,
+    false, false, false, false, false, false,
     # right leg
-    true, true, true, true, true, true,
+    false, false, false, false, false, false,
     # waist
     true, true, true,
     # head
-    false, false, false,
+    true, true, true,
     # left arm
-    true, true, true, true, false, false, false,
+    true, true, true, true, true, true, true,
     # right arm
-    true, true, true, true, false, false, false,
+    true, true, true, true, true, true, true,
   ]
   comm_use_fast: [
     # left leg
@@ -111,9 +120,9 @@ actuator:
     # waist
     true, true, true,
     # head
-    false, false, false,
+    true, true, true,
     # left arm
-    true, true, true, true, false, false, false,
+    true, true, true, true, true, true, true,
     # right arm
-    true, true, true, true, false, false, false,
+    true, true, true, true, true, true, true,
   ]

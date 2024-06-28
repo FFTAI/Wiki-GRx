@@ -25,11 +25,33 @@
     git clone https://gitee.com/FourierIntelligence/wiki-grx-deploy.git
     ```
 
-4. Install neccessary environment:
+4. Setting up firewall
+
+    Turn the access of firewall for server connection
+    ```
+    sudo ufw allow 7446/udp
+    ```
+    The setup link for firewall for ubuntu is: *https://ubuntu.com/server/docs/firewalls*
+    
+    The correct setup of firewall could be checked by
+    ```
+    sudo ufw status
+    ```
+    If the the all the setup is correct you should see the information like this on the terminal:
+    ```
+    To                         Action      From
+    --                         ------      ----
+    Anywhere                   ALLOW       224.0.0.0/24              
+    7446/udp                   ALLOW       Anywhere                  
+    7446/udp (v6)              ALLOW       Anywhere (v6)  
+    ```
+
+5. Install neccessary environment:
     > **Notice**: We should download the .whl file before installing it. The .whl files must be installed sequentially.
     ```
-    python -m pip install robot_rcs-0.4.0.9-cp311-cp311-manylinux_2_30_x86_64.whl
-    python -m pip install robot_rcs_gr-1.9.1.7-cp311-cp311-manylinux_2_30_x86_64.whl
+    python -m pip install robot_rcs-0.4.0.10-cp311-cp311-manylinux_2_30_x86_64.whl
+
+    python -m pip install robot_rcs_gr-1.9.1.8-cp311-cp311-manylinux_2_30_x86_64.whl
     ```
 
 
@@ -63,36 +85,44 @@
     ```
 
 
-# Demo
+# Main control loop
 ## Calibration
 The first step to run the demo code, is to make sure the sensor_offset.json is filled with your machine absolute encoder value, instead of the value in this repository (may be different from your machine).
 
 Every machine has its own home position encoder value, which should be set with the machine power on and the joint fixed at the pin position.
 
-After you have finished the machine's physical calibration process (moving all joints to the pin position), you can run the client code and call the **set_home** function in this repository. The **set_home** function will record the absolute encoder values and store them in the `sensor_offset.json` file.
+After you have finished the machine's physical calibration process (moving all joints to the pin position), you can run the demo code `demo_set_home` to do the calibration for absolute encoder. The **set_home** function will record the absolute encoder values and store them in the `sensor_offset.json` file.
 
-THe following instructions help you to run the client properly.
+THe following instructions help you to run the server and `set_home` properly.
 
 
-### Running clinet(using sample config file):
-First, run *run_server.py* in a terminal with sample config file
+### Calibration for absolute encoder procedure:
+> **Notice**: Make sure run `run_server.py` scripts with proper config file before running other scripts. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
+
+First, run `run_server.py` in a terminal with sample config file, make sure to use the correct config file for T1 and T2 robot. The sample code is running with *config_GR1_T1.yaml* for robot GR1T1.
+
+(T1 config: ./config/config_GR1_T1.yaml)
+
+(T2 config: ./config/config_GR1_T2.yaml)
 ```
 python run_server.py ./config/config_GR1_T1.yaml
 ```
-Open second terminal, activate the environment and run robot_client
+Open second terminal, activate the environment and run `demo_set_home.py`
 ```
-python demo_robot_client.py
+python demo_set_home.py
 ```   
 
 After client has been poped out, type **set_home** to use set_home function, and it will get sensor offsets and save to `sensor_offset.json`, the file could be used to calibrating the robot. 
 
 ## Robot Client
 ### Running clinet(using sample config file):
-First, run *run_server.py* in a terminal with sample config file
+> **Notice**: Make sure run `run_server.py` scripts with proper config file before running client. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
+
+First, run `run_server.py` in a terminal with sample config file (demo using T1 config file)
 ```
 python run_server.py ./config/config_GR1_T1.yaml
 ```
-Open second terminal, activate the environment and run robot_client
+Open second terminal, activate the environment and run `robot_client.py`
 ```
 python demo_robot_client.py
 ``` 
@@ -106,8 +136,8 @@ When running the `run_server` script, you can modify and use several options. Th
 - **verbose**: Flag to print internal debug info, default=True.
 - **visualize**: Flag to visualize the robot in RViz, default=True.
 
-**Sample usage**
 
+**Sample usage**
 ```
 python run_server.py path/to/config/file --freq 500 --debug_interval 0 --verbose True --visualize True
 ```
@@ -151,6 +181,17 @@ When running *demo_robot_client* scripts, it will pop up a robot client panel in
 3. Main control loop:
     - In the main control loop, the robot client panel will prompt the user to type out the function name they want to use. For example, when the client asks: "What do you want the robot to do?", simply type "set_home" to use the set_home function. This is also mentioned in the calibration task, and the goal of each function in the robot client has been listed in the client function explanation part.
     - In the main control loop, the client will keep asking for input until the user exits the client.
+
+
+# Demo Code
+> **Notice**: make sure run the scripts `run_server.py` with proper config file before any running any demo code. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
+
+## demo_print_joint.py
+In this demo, you will get the joint information from robot at current status. Including 
+```
+python demo
+```
+
 
 
 
