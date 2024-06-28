@@ -27,17 +27,17 @@
 
 4. Setting up firewall
 
-    Turn the access of firewall for server connection
+    Enable firewall access for the server connection.
     ```
     sudo ufw allow 7446/udp
     ```
     The setup link for firewall for ubuntu is: *https://ubuntu.com/server/docs/firewalls*
     
-    The correct setup of firewall could be checked by
+    The correct setup of the firewall can be checked by
     ```
     sudo ufw status
     ```
-    If the the all the setup is correct you should see the information like this on the terminal:
+    If all the setup is correct, you should see information like this on the terminal:
     ```
     To                         Action      From
     --                         ------      ----
@@ -99,7 +99,7 @@ THe following instructions help you to run the server and `set_home` properly.
 ### Calibration for absolute encoder procedure:
 > **Notice**: Make sure run `run_server.py` scripts with proper config file before running other scripts. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
 
-First, run `run_server.py` in a terminal with sample config file, make sure to use the correct config file for T1 and T2 robot. The sample code is running with *config_GR1_T1.yaml* for robot GR1T1.
+First, run `run_server.py` in a terminal with the sample config file. Make sure to use the correct config file for the T1 and T2 robots. The sample code runs with *config_GR1_T1.yaml* for the GR1T1 robot.
 
 (T1 config: ./config/config_GR1_T1.yaml)
 
