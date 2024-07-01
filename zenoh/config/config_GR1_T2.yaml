@@ -67,11 +67,12 @@ fi_fsa:
   version: "v1"
   debug: false
   blocking: false
-  timeout: 0.005
+  timeout: 0.01
   port_ctrl: 2333
   port_comm: 2334
   port_fast: 2335
   network: "192.168.137.255"
+  concurrency: true
 
 actuator:
   type: "FIFSAV1"

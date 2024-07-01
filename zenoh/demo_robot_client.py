@@ -21,14 +21,14 @@ log = console.log
 print = console.print
 
 
-FREQUENCY = 150 # Set control frequency
+FREQUENCY = 150 # Set control frequency, could set any number below 400Hz
 
-# Enable the force applied into motor
+# The enable function results in the motor being operable.
 def task_enable(client: RobotClient):
     client.set_enable(True)
 
 
-# Disable the force applied into motor
+# The disable function results in the motor being inoperable.
 def task_disable(client: RobotClient):
     client.set_enable(False)
 
@@ -114,7 +114,7 @@ def record(client: RobotClient):
     # Prompt user to move to start position
     reply = Prompt.ask("Move to start position and press enter")
     if reply == "":
-        # Update position before enabling the motor
+        # Update position before enabling the motor in order to avoid the damage
         client.update_pos()
         time.sleep(0.1)
         client.set_enable(True)
@@ -211,14 +211,16 @@ def task_abort(client: RobotClient):
     client.abort()
 
 
-# List all the links and joint from robot URDF 
+# List all the links from robot URDF 
 def task_list_frames(client: RobotClient):
     frames = client.list_frames()
     print(frames)
 
 
-# Get Transformation from one link to another one
+# Get Transformation matix from one link to another one
 def task_get_transform(client: RobotClient):
+    # The parameters that could be fiiled in this function is name listed out by function list_frames
+    # You could put any two links to get their transformation matrix
     transform = client.get_transform("base", "l_wrist_roll")
     print(f"Transform from base to l_wrist_roll: {transform}")
 
@@ -238,8 +240,8 @@ if __name__ == "__main__":
         task = Prompt.ask(
             "What do you want the :robot: to do?",
             choices=[
-                "enable", # Enable the force applied into motor
-                "disable", # Disable the force applied into motor 
+                "enable", # The enable function results in the motor being operable.
+                "disable", # The disable function results in the motor being inoperable.
                 "set_home", # Get sensor offsets and save to `sensor_offset.json`, it could be used to calibrating all the absolute encoder
                 "set_gains", # Get PD parameter of the motor
                 "reboot", # Reboot all the motor and go back to zero position

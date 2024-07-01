@@ -49,9 +49,9 @@
 5. Install neccessary environment:
     > **Notice**: We should download the .whl file before installing it. The .whl files must be installed sequentially.
     ```
-    python -m pip install robot_rcs-0.4.0.10-cp311-cp311-manylinux_2_30_x86_64.whl
+    python -m pip install robot_rcs-0.4.0.11-cp311-cp311-manylinux_2_30_x86_64.whl
 
-    python -m pip install robot_rcs_gr-1.9.1.8-cp311-cp311-manylinux_2_30_x86_64.whl
+    python -m pip install robot_rcs_gr-1.9.1.10-cp311-cp311-manylinux_2_30_x86_64.whl
     ```
 
 
@@ -134,7 +134,8 @@ When running the `run_server` script, you can modify and use several options. Th
 - **freq**: Main loop frequency in Hz, defualt=500.
 - **debug_interval**: Debug loop print interval, default=0.
 - **verbose**: Flag to print internal debug info, default=True.
-- **visualize**: Flag to visualize the robot in RViz, default=True.
+- **visualize**: Flag to visualize the robot in Rviz, default=True.
+> **Notice**: The GR1T1 URDF file cannot be changed in the current version. 
 
 
 **Sample usage**
@@ -145,9 +146,9 @@ python run_server.py path/to/config/file --freq 500 --debug_interval 0 --verbose
 ### Function Explanation(robot_Clinet)
 When running *demo_robot_client* scripts, it will pop up a robot client panel in the command window. There are thirteen selections for the user to choose from. Type out the name and press Enter to select and use different functions:
 
-- **Enable**: Enable the force applied to the motor; the motor cannot move freely.
+- **Enable**: The enable function results in the motor being operable; the motor cannot move freely.
 
-- **Disable**: Disable the force applied to the motor; the robot arm can move freely.
+- **Disable**: The disable function results in the motor being inoperable.; the robot arm can move freely.
 
 - **Set_Home**: This function is used during the calibration task before any work starts. It gets sensor offsets and saves them to `sensor_offset.json`. This file can be used to calibrate all the absolute encoders.
 
@@ -165,9 +166,9 @@ When running *demo_robot_client* scripts, it will pop up a robot client panel in
 
 - **Abort**: Stop any movement that the robot is performing at the moment.
 
-- **list_frames**: List all the links and joints from the robot URDF.
+- **list_frames**: List all the links from the robot URDF.
 
-- **get_transform**: Get the transformation from one link to another.
+- **get_transform**: Get the transformation matrix from one link frame to another. The options could be checked by using `List_frams` function.
 
 - **Exit**: Exit the robot client panel.
 

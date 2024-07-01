@@ -1,4 +1,15 @@
 # Change Logs
+- **2024-7-01**
+    - README updates:
+        - Updated the install link for the new `.whl` file.
+        - fixed error in description of `enable` and `disable` function in robot_client
+        -  Fix description about `list_frame` and `get_transform` function
+    - New whl file:
+        - robot_rcs has been updated to version `robot_rcs-0.4.0.11`
+        - robot_rcs_gr has been updated to version `robot_rcs_gr-1.9.1.10`
+    - Config file updates:
+        - Released a new version of the config file, targeting the new robot_rcs and robot_rcs_gr packages. Changes were made to T2 config files.
+
 
 - **2024-6-28**
     - README updates:
