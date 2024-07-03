@@ -190,7 +190,7 @@ When running *demo_robot_client* scripts, it will pop up a robot client panel in
 ## demo_print_joint.py
 In this demo, you will get the joint information from robot at current status. Including 
 ```
-python demo
+python demo_print_joints.py
 ```
 
 
