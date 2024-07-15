@@ -1,44 +1,55 @@
 
-# Setting up the environment
+# fourier-grx 
+
+## Environment Setup
 
 1. Install Conda environment
 
     Miniconda download:
-    ```
+
+    ```bash
     https://docs.anaconda.com/free/miniconda/index.html
     ```
 
     Miniconda install:
-    ```
+
+    ```bash
     bash ./Miniconda3-latest-Linux-x86_64.sh
     ```
 
 2. Create Conda environment:
     > **Notice**: We should create the environment with Python 3.11 because all the libraries are compatible with this version.
-    ```
-    conda create -n wiki-grx-deploy python=3.11
-    conda activate wiki-grx-deploy
+
+    ```bash
+    conda create -n grx-env python=3.11
+    conda activate grx-env
     ```
 
 3. The official `wiki-grx-deploy` Git repository can be cloned from:
-    ```
+
+    ```bash
     git clone https://gitee.com/FourierIntelligence/wiki-grx-deploy.git
     ```
 
 4. Setting up firewall
 
     Enable firewall access for the server connection.
-    ```
+
+    ```bash
     sudo ufw allow 7446/udp
     ```
+
     The setup link for firewall for ubuntu is: *https://ubuntu.com/server/docs/firewalls*
-    
+
     The correct setup of the firewall can be checked by
-    ```
+
+    ```bash
     sudo ufw status
     ```
+
     If all the setup is correct, you should see information like this on the terminal:
-    ```
+
+    ```txt
     To                         Action      From
     --                         ------      ----
     Anywhere                   ALLOW       224.0.0.0/24              
@@ -46,16 +57,20 @@
     7446/udp (v6)              ALLOW       Anywhere (v6)  
     ```
 
-5. Install neccessary environment:
-    > **Notice**: We should download the .whl file before installing it. The .whl files must be installed sequentially.
-    ```
-    python -m pip install robot_rcs-0.4.0.11-cp311-cp311-manylinux_2_30_x86_64.whl
+5. Installing is as easy as running the following command:
 
-    python -m pip install robot_rcs_gr-1.9.1.10-cp311-cp311-manylinux_2_30_x86_64.whl
+    ```bash
+    python -m pip install fourier-grx
     ```
 
+    It will intall the `fourier_grx` library along with a command line tool `grx`. You can check the installation by running the following command:
 
-# Setting up RBDL before running the demo
+    ```bash
+    grx --help
+    ```
+
+
+<!-- # Setting up RBDL before running the demo
 
 1. The official RBDL building and installation instructions can be found at:
     > **Notice**: Clone RBDL repository is optional
@@ -82,68 +97,59 @@
     sudo make install
     echo "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> ~/.bashrc
     source ~/.bashrc
-    ```
+    ``` -->
 
 
-# Main control loop
 ## Calibration
-The first step to run the demo code, is to make sure the sensor_offset.json is filled with your machine absolute encoder value, instead of the value in this repository (may be different from your machine).
 
-Every machine has its own home position encoder value, which should be set with the machine power on and the joint fixed at the pin position.
+> [!CAUTION]
+> Always make sure the `sensor_offset.json` file is filled with the correct absolute encoder values before running any code. The calibration process is crucial for the robot to work properly. Otherwise it may cause damage to the robot.
+> The `grx run` command reads the `sensor_offset.json` file from the same directory where the server is started. Make sure the `sensor_offset.json` file is in the same directory as where you start the server.
 
-After you have finished the machine's physical calibration process (moving all joints to the pin position), you can run the demo code `demo_set_home` to do the calibration for absolute encoder. The **set_home** function will record the absolute encoder values and store them in the `sensor_offset.json` file.
+
+The `sensor_offset.json` file contains the absolute encoder values for the robot, which is unique to each robot. Usually, the `sensor_offset.json` file should be provided with the onboard computer. If the file is not provided, the calibration process should be done manually.
+
+Before running the calibration process, make sure the robot is in the correct position. The robot should be in the zero position, with all joints at the pin position.
+After you have finished the machine's physical calibration process (moving all joints to the pin position), you can follow the following instructions to do the calibration for absolute encoder. The `grx` tool will record the absolute encoder values and store them in the `sensor_offset.json` file.
 
 THe following instructions help you to run the server and `set_home` properly.
 
 
 ### Calibration for absolute encoder procedure:
-> **Notice**: Make sure run `run_server.py` scripts with proper config file before running other scripts. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
 
-First, run `run_server.py` in a terminal with the sample config file. Make sure to use the correct config file for the T1 and T2 robots. The sample code runs with *config_GR1_T1.yaml* for the GR1T1 robot.
+First, run the `grx` server in a terminal with the sample config file. Make sure to use the correct config file for the T1 and T2 robots. We provide sample config files for the GR1T1 and GR1T2 robots. The sample code runs with *config_GR1_T1.yaml* for the GR1T1 robot.
+First start a `grx` server:
 
-(T1 config: ./config/config_GR1_T1.yaml)
-
-(T2 config: ./config/config_GR1_T2.yaml)
+```bash
+grx run ./config/config_GR1_T1.yaml --urdf-path ./urdf
 ```
-python run_server.py ./config/config_GR1_T1.yaml
-```
-Open second terminal, activate the environment and run `demo_set_home.py`
-```
-python demo_set_home.py
-```   
 
-After client has been poped out, type **set_home** to use set_home function, and it will get sensor offsets and save to `sensor_offset.json`, the file could be used to calibrating the robot. 
+Open a second terminal, activate the environment and run:
 
-## Robot Client
+```bash
+grx calibrate
+```
+
+And it will get sensor offsets and save to `sensor_offset.json`, keep the file in the same directory you are starting the `grx` server from.
+
+## Usage
+
 ### Running clinet(using sample config file):
-> **Notice**: Make sure run `run_server.py` scripts with proper config file before running client. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
 
-First, run `run_server.py` in a terminal with sample config file (demo using T1 config file)
+irst, start a `grx` server in a terminal with sample config file (demo using T1 config file). The `grx run` command needs the path to the config file and the URDF folder. The sample code runs with *config_GR1_T1.yaml* for the GR1T1 robot and *config_GR1_T2.yaml* for the GR1T2 robot. 
+
+```bash
+grx run ./config/config_GR1_TX.yaml --urdf-path ./urdf
 ```
-python run_server.py ./config/config_GR1_T1.yaml
-```
-Open second terminal, activate the environment and run `robot_client.py`
-```
+
+Once the server started, you can run the robot client to control the robot. A demo usage is given in the `demo_robot_client.py` script.
+To run it, open a second terminal, while keeping the server running in the first terminal. In the second terminal, activate the environment and run `demo_robot_client.py`
+
+```bash
+conda activate grx-env
 python demo_robot_client.py
-``` 
-
-### Function Explanation(robot server)
-When running the `run_server` script, you can modify and use several options. These options can be specified using the following parameters:
-
-- **config**: Path to the config file.
-- **freq**: Main loop frequency in Hz, defualt=500.
-- **debug_interval**: Debug loop print interval, default=0.
-- **verbose**: Flag to print internal debug info, default=True.
-- **visualize**: Flag to visualize the robot in Rviz, default=True.
-> **Notice**: The GR1T1 URDF file cannot be changed in the current version. 
-
-
-**Sample usage**
 ```
-python run_server.py path/to/config/file --freq 500 --debug_interval 0 --verbose True --visualize True
-```
-    
-### Function Explanation(robot_Clinet)
+
 When running *demo_robot_client* scripts, it will pop up a robot client panel in the command window. There are thirteen selections for the user to choose from. Type out the name and press Enter to select and use different functions:
 
 - **Enable**: The enable function results in the motor being operable; the motor cannot move freely.
@@ -173,26 +179,27 @@ When running *demo_robot_client* scripts, it will pop up a robot client panel in
 - **Exit**: Exit the robot client panel.
 
 
-### Detailed explanation
-1. Import and setup:
-    - The script begins by importing necessary modules: Threading, msgpack_numpy, zenoh, numpy, time, rich, typer, and specific versions of robot_rcs and robot_rcs_gr.
-2. Control System Initialization:
-    - The RobotClient system is imported and initialized, serving as the main client panel for controlling the robot.
-    - The control system has been initialized with a frequency of 150Hz..
-3. Main control loop:
-    - In the main control loop, the robot client panel will prompt the user to type out the function name they want to use. For example, when the client asks: "What do you want the robot to do?", simply type "set_home" to use the set_home function. This is also mentioned in the calibration task, and the goal of each function in the robot client has been listed in the client function explanation part.
-    - In the main control loop, the client will keep asking for input until the user exits the client.
+## RL demo
 
+> [!CAUTION] 
+> When running the demo, make sure the robot is in a safe position and there is enough space around the robot. Always be ready to push the emergency stop button in case of any unexpected behavior.
 
-# Demo Code
-> **Notice**: make sure run the scripts `run_server.py` with proper config file before any running any demo code. Also, you need to open a new commmand windows for other scripts after `run_server.py` scripts. 
+We also provide a demo for the reinforcement learning waliking.
 
-## demo_print_joint.py
-In this demo, you will get the joint information from robot at current status. Including 
-```
-python demo_print_joints.py
+To run the demo, first start a `grx` server in a terminal with the sample config file (demo using T1 config file). The `grx run` command needs the path to the config file and the URDF folder. The sample code runs with *config_GR1_T1.yaml* for the GR1T1 robot and *config_GR1_T2.yaml* for the GR1T2 robot. 
+
+```bash
+grx run ./config/config_GR1_TX.yaml --urdf-path ./urdf
 ```
 
+Wait for a few seconds for the server to start. Then open a second terminal, activate the environment and run the `demo_nohla_stand.py` script.
 
+```bash
+python demo_nohla_stand.py --act
+```
 
+After the robot is in a standing position, you can lower the robot to the ground and then run the `demo_nohla_walk.py` script to make the robot walk.
 
+```bash
+python demo_nohla_walk.py --model-dir ./data/nohla_rl_walk --act
+```

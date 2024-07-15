@@ -1,17 +1,13 @@
+log_config: false  # print config file content when start program
 device_connected: true
 cpu: "X64"
 system: "LINUX"
 robot:
   name: "GR1"
   mechanism: "T2"
-  control_period: 0.01
-  input_and_calculate_period: 0
-
-  # right now, the state estimator is not very accurate, suggest to disable it
-  # unless you know what you are doing
-  state_estimator:
-    enable: false
-    path: "/state_estimator/model_gr1_t2.json"
+  control_period: 0.01  # 100Hz
+  algorithm_period: 0.01  # 100Hz
+  communication_period: 0.02  # 50Hz
 
 comm:
   enable: false
@@ -33,16 +29,16 @@ ota:
 hardware:
   use_can: false
   use_ethernet: false
-  use_etherbus: false
   use_fi_fse: true
   use_fi_fsa: true
 
 sensor_usb_imu:
   usb: [
+    # must put base link imu at first
     "/dev/ttyUSB0"
   ]
   comm_enable: [
-    false
+    true
   ]
   comm_frequency: [
     500
@@ -50,14 +46,6 @@ sensor_usb_imu:
 
 sensor_abs_encoder:
   type: "FIFSEV1"
-  ip: [
-    # left leg
-    "192.168.137.170", "192.168.137.171", "192.168.137.172", "192.168.137.173", "192.168.137.174", "192.168.137.175",
-    # right leg
-    "192.168.137.150", "192.168.137.151", "192.168.137.152", "192.168.137.153", "192.168.137.154", "192.168.137.155",
-    # waist
-    "192.168.137.190", "192.168.137.191", "192.168.137.192",
-  ]
   data_path: "sensor_offset.json"
 
 fi_fse:
@@ -65,45 +53,24 @@ fi_fse:
 
 fi_fsa:
   version: "v1"
-  debug: false
-  blocking: false
-  timeout: 0.01
-  port_ctrl: 2333
-  port_comm: 2334
-  port_fast: 2335
-  network: "192.168.137.255"
-  concurrency: true
+  concurrency: false
 
 actuator:
   type: "FIFSAV1"
   use_dic: false
   names: [
-      "l_hip_roll", "l_hip_yaw", "l_hip_pitch", "l_knee_pitch", "l_ankle_pitch", "l_ankle_roll",
-      "r_hip_roll", "r_hip_yaw", "r_hip_pitch", "r_knee_pitch", "r_ankle_pitch", "r_ankle_roll",
-      "joint_waist_yaw", "joint_waist_pitch", "joint_waist_roll",
-      "joint_head_pitch", "joint_head_roll", "joint_head_yaw",
-      "l_shoulder_pitch", "l_shoulder_roll", "l_shoulder_yaw", "l_elbow_pitch", "l_wrist_yaw", "l_wrist_roll", "l_wrist_pitch",
-      "r_shoulder_pitch", "r_shoulder_roll", "r_shoulder_yaw", "r_elbow_pitch", "r_wrist_yaw", "r_wrist_roll", "r_wrist_pitch",
-  ]
-  ip: [
-    # left leg
-    "192.168.137.70", "192.168.137.71", "192.168.137.72", "192.168.137.73", "192.168.137.74", "192.168.137.75",
-    # right leg
-    "192.168.137.50", "192.168.137.51", "192.168.137.52", "192.168.137.53", "192.168.137.54", "192.168.137.55",
-    # waist
-    "192.168.137.90", "192.168.137.91", "192.168.137.92",
-    # head
-    "192.168.137.93", "192.168.137.94", "192.168.137.95",
-    # left arm
-    "192.168.137.10" , "192.168.137.11" , "192.168.137.12" , "192.168.137.13" , "192.168.137.14" , "192.168.137.15" , "192.168.137.16",
-    # right arm
-    "192.168.137.30" , "192.168.137.31" , "192.168.137.32" , "192.168.137.33" , "192.168.137.34" , "192.168.137.35" , "192.168.137.36",
+    "l_hip_roll", "l_hip_yaw", "l_hip_pitch", "l_knee_pitch", "l_ankle_pitch", "l_ankle_roll",
+    "r_hip_roll", "r_hip_yaw", "r_hip_pitch", "r_knee_pitch", "r_ankle_pitch", "r_ankle_roll",
+    "joint_waist_yaw", "joint_waist_pitch", "joint_waist_roll",
+    "joint_head_pitch", "joint_head_roll", "joint_head_yaw",
+    "l_shoulder_pitch", "l_shoulder_roll", "l_shoulder_yaw", "l_elbow_pitch", "l_wrist_yaw", "l_wrist_roll", "l_wrist_pitch",
+    "r_shoulder_pitch", "r_shoulder_roll", "r_shoulder_yaw", "r_elbow_pitch", "r_wrist_yaw", "r_wrist_roll", "r_wrist_pitch",
   ]
   comm_enable: [
     # left leg
-    false, false, false, false, false, false,
+    true, true, true, true, true, true,
     # right leg
-    false, false, false, false, false, false,
+    true, true, true, true, true, true,
     # waist
     true, true, true,
     # head

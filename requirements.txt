@@ -1,5 +1,0 @@
-eclipse-zenoh
-typer
-rich
-msgpack
-msgpack_numpy

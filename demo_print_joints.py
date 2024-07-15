@@ -8,7 +8,6 @@ if __name__ == "__main__":
     r = RobotClient(60)
     time.sleep(1.0)
     while True:
-        print(r.states["joint"])
         print(np.round(r.joint_positions, 1))
         # print(r.states["joint"]["velocity"])
         time.sleep(0.1)
