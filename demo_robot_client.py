@@ -1,19 +1,14 @@
 import threading
 import time
 
-import msgpack_numpy as m
 import numpy as np
-import zenoh
 from rich.console import Console
 from rich.pretty import pprint
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
-from robot_rcs_gr.sdk import ControlGroup, RobotClient
+from fourier_grx.sdk import ControlGroup, RobotClient
 
-m.patch() # Patch msgpack_numpy to handle numpy arrays
-
-zenoh.init_logger() # Initialize zenoh logger
 
 # Initialize console for rich logging and printing
 console = Console()

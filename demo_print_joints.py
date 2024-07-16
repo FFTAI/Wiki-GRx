@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 
-from robot_rcs_gr.sdk import RobotClient
+from fourier_grx.sdk import RobotClient
 
 if __name__ == "__main__":
     r = RobotClient(60)
