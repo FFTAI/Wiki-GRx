@@ -1,3 +1,4 @@
+![Fourier Logo](pictures/Fourier/FOURIER%20LOGO-Standard%20Colour_EN.jpg)
 # fourier-grx
 
 Welcome to the Fourier-GRX SDK, your gateway to controlling [Fourier](https://fourierintelligence.com/)'s humanoid robots! This guide will help you set up your environment, calibrate your humanoid robot, and run exciting demos. Let’s dive into the future of robotics! 🤖🚀

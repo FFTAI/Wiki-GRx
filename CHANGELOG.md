@@ -1,4 +1,13 @@
 # Change Logs
+- **2024-07-16**
+    - New setup version is coming:
+        - The `whl` files have been removed, and the control system now uses the `fourier-grx` library. The `fourier-grx` library can be downloaded with `pip install fourier-grx`. All the control system dependencies have been updated to align with the `fourier-grx` library.
+    - README updated:
+        - The README has been updated with new instructions on installing the `fourier-grx` library and using it.
+    - New Demo:
+        - A demo using reinforcement learning to walk and stand has been provided. They are `demo_nohla_rl_walk` and `demo_nohla_stand`, respectively.
+
+
 - **2024-7-01**
     - README updates:
         - Updated the install link for the new `.whl` file.
