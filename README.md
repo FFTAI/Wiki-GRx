@@ -67,20 +67,24 @@ If you are using `ufw`, follow these steps to enable firewall access for the `gr
 > [!CAUTION]
 > Ensure the `sensor_offset.json` file contains the correct absolute encoder values before running any code. Proper calibration is crucial for the robot’s operation and prevents potential damage. The grx run command reads the sensor_offset.json file from the directory where the server is started. Make sure this file is in the same directory when starting the server.
 
-### Calibrate Your Humanoid Robot
+### Calibrate Your Humanoid Robot's Absolute Encoder
 
-1. **Run the `grx` server:**
+1. Physical calibration could be down with the instructions shown in [Physical_Calibration](Calibration_Procedure.md)
+
+2. **Run the `grx` server:**
     ```bash
     grx run ./config/config_GR1_T1.yaml --urdf-path ./urdf
     ```
 
-2. **Open a second terminal, activate the environment, and run:**
+3. **Open a second terminal, activate the environment, and run:**
     ```bash
     conda activate grx-env
     grx calibrate
     ```
 
-This saves sensor offsets to `sensor_offset.json`.
+> **Notice: Ensure that all calibration tools have been removed before proceeding with other operations.**
+
+This saves sensor offsets to `sensor_offset.json`. 
 
 ## 🎛️ Usage
 
@@ -131,11 +135,18 @@ This saves sensor offsets to `sensor_offset.json`.
     ```bash
     python demo_nohla_stand.py --act
     ```
+    Demo result:
+
+    <!-- ![RL_Stand_result](pictures/GIF/RL_stand.gif) -->
+
 
 3. **Run the walking demo:**
     ```bash
     python demo_nohla_walk.py --model-dir ./data/nohla_rl_walk --act
     ```
+    Demo result:
+
+    <!-- ![RL_Stand_result](pictures/GIF/RL_walk.gif) -->
 
 Now your humanoid robot should be up and walking! 🦾🚶‍♂️ 
 
