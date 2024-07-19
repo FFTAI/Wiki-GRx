@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 import typer
-from fourier_grx.robot.gr1_nohla.fi_robot_gr1_nohla_algorithm import RobotGR1NohlaAlgorithmStandControlModel
+from fourier_grx.sdk.algorithm import FourierGR1NohlaStandControlModel
 from fourier_grx.sdk import ControlGroup, ControlMode, RobotClient
 from ischedule import run_loop, schedule
 
@@ -31,7 +31,7 @@ class DemoNohlaStand:
 
         # algorithm
         algorithm_control_period = 1.0 / step_freq
-        self.algorithm_nohla_stand_control_model = RobotGR1NohlaAlgorithmStandControlModel(dt=algorithm_control_period)
+        self.algorithm_nohla_stand_control_model = FourierGR1NohlaStandControlModel(dt=algorithm_control_period)
 
     def set_gains(self):
         """

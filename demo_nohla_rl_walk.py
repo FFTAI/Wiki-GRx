@@ -4,7 +4,7 @@ import time
 import numpy as np
 import typer
 from fourier_grx.sdk import ControlGroup, ControlMode, RobotClient
-from fourier_grx.sdk.algorithm_rl import FourierGR1NohlaRLWalkControl
+from fourier_grx.sdk.algorithm_rl import FourierGR1NohlaRLWalkControlModel
 from ischedule import run_loop, schedule
 
 
@@ -13,7 +13,13 @@ class DemoNohlaRLWalk:
     Reinforcement Learning Walker
     """
 
-    def __init__(self, comm_freq: int = 400, step_freq: int = 100, model_dir: Path | str | None = None, act: bool = False):
+    def __init__(
+        self,
+        comm_freq: int = 400,
+        step_freq: int = 100,
+        model_dir: Path | str | None = None,
+        act: bool = False,
+    ):
         """
         Initialize the RL Walker
 
@@ -47,7 +53,7 @@ class DemoNohlaRLWalk:
         # algorithm
         algorithm_control_period = 1.0 / step_freq
         if model_dir is not None:
-            self.model = FourierGR1NohlaRLWalkControl(
+            self.model = FourierGR1NohlaRLWalkControlModel(
                 dt=algorithm_control_period,
                 decimation=int((1 / 100) / algorithm_control_period),
                 warmup_period=1.0,
@@ -55,8 +61,12 @@ class DemoNohlaRLWalk:
                 encoder_model_file_path=model_dir + "/encoder.pt",
             )
         else:
-            self.model = FourierGR1NohlaRLWalkControl(
-                dt=algorithm_control_period, decimation=int((1 / 100) / algorithm_control_period), warmup_period=1.0
+            self.model = FourierGR1NohlaRLWalkControlModel(
+                dt=algorithm_control_period,
+                decimation=int((1 / 100) / algorithm_control_period),
+                warmup_period=1.0,
+                actor_model_file_path="./actor.pt",
+                encoder_model_file_path="./encoder.pt",
             )
 
     def set_gains(self):
@@ -103,9 +113,15 @@ class DemoNohlaRLWalk:
 
         # get states
         imu_quat = self.client.states["imu"]["quat"].copy()
-        imu_angular_velocity_deg = self.client.states["imu"]["angular_velocity"].copy()  # unit : deg/s
-        joint_measured_position_urdf_deg = self.client.states["joint"]["position"].copy()  # unit : deg
-        joint_measured_velocity_urdf_deg = self.client.states["joint"]["velocity"].copy()  # unit : deg/s
+        imu_angular_velocity_deg = self.client.states["imu"][
+            "angular_velocity"
+        ].copy()  # unit : deg/s
+        joint_measured_position_urdf_deg = self.client.states["joint"][
+            "position"
+        ].copy()  # unit : deg
+        joint_measured_velocity_urdf_deg = self.client.states["joint"][
+            "velocity"
+        ].copy()  # unit : deg/s
 
         # prepare input
         if commands is None:
@@ -122,8 +138,12 @@ class DemoNohlaRLWalk:
         joint_measured_velocity_nohla_urdf = np.zeros(len(controlled_joints))
 
         # joint: real robot urdf -> algorithm urdf
-        joint_measured_position_nohla_urdf = np.deg2rad(joint_measured_position_urdf_deg)[controlled_joints]
-        joint_measured_velocity_nohla_urdf = np.deg2rad(joint_measured_velocity_urdf_deg)[controlled_joints]
+        joint_measured_position_nohla_urdf = np.deg2rad(
+            joint_measured_position_urdf_deg
+        )[controlled_joints]
+        joint_measured_velocity_nohla_urdf = np.deg2rad(
+            joint_measured_velocity_urdf_deg
+        )[controlled_joints]
 
         # run algorithm
         joint_target_position_nohla_urdf_rad = self.model.run(
@@ -135,16 +155,28 @@ class DemoNohlaRLWalk:
             joint_measured_velocity_urdf=joint_measured_velocity_nohla_urdf,
         )  # unit : rad
 
-        joint_target_position_nohla_urdf_deg = np.rad2deg(joint_target_position_nohla_urdf_rad)  # unit : deg
-        joint_target_position_urdf_deg = np.rad2deg(self.default_position.copy())  # unit : deg
-        joint_target_position_urdf_deg[controlled_joints] = joint_target_position_nohla_urdf_deg
+        joint_target_position_nohla_urdf_deg = np.rad2deg(
+            joint_target_position_nohla_urdf_rad
+        )  # unit : deg
+        joint_target_position_urdf_deg = np.rad2deg(
+            self.default_position.copy()
+        )  # unit : deg
+        joint_target_position_urdf_deg[controlled_joints] = (
+            joint_target_position_nohla_urdf_deg
+        )
 
         if self.act:
-            self.client.move_joints(ControlGroup.ALL, joint_target_position_urdf_deg, 0.0)
+            self.client.move_joints(
+                ControlGroup.ALL, joint_target_position_urdf_deg, 0.0
+            )
 
 
-def main(comm_freq: int = 400, step_freq: int = 100, act: bool = False, model_dir: str  = ""):
-    walker = DemoNohlaRLWalk(comm_freq=comm_freq, step_freq=step_freq, act=act, model_dir=model_dir)
+def main(
+    comm_freq: int = 400, step_freq: int = 100, act: bool = False, model_dir: str = ""
+):
+    walker = DemoNohlaRLWalk(
+        comm_freq=comm_freq, step_freq=step_freq, act=act, model_dir=model_dir
+    )
 
     # start the scheduler
     schedule(walker.step, interval=1 / step_freq)
