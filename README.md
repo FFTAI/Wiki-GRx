@@ -7,6 +7,7 @@ Welcome to the Fourier-GRX SDK, your gateway to controlling [Fourier](https://fo
 
     • Operating System: Ubuntu 20.04 and up
     • Python Version: Python 3.11
+**If you are first time using the robot, please set up the permission for IMU(HIPNUC IMU) and joysticks with [permission_description](permissions.md)**
 
 ## 🚀 Environment Setup
 

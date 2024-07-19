@@ -1,9 +1,13 @@
 # Change Logs
+- **2024-7-19**
+    - Permission setup:
+        - Adding instructions about how to set permission for joysticks and IMU(HIPNUC IMU)
 - **2024-7-17**
     - Calibration step updates:
         - Adding more detailed calibration step including physical calibration step.
     - Demo updates:
         - Adding Gif to show the result from `demo_nohla_rl_walk` and `demo_nohla_stand`. 
+
 - **2024-07-16**
     - New setup version is coming:
         - The `whl` files have been removed, and the control system now uses the `fourier-grx` library. The `fourier-grx` library can be downloaded with `pip install fourier-grx`. All the control system dependencies have been updated to align with the `fourier-grx` library.
