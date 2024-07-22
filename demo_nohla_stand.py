@@ -12,17 +12,16 @@ class DemoNohlaStand:
     Reinforcement Learning Walker
     """
 
-    def __init__(self, comm_freq=400, step_freq=100, act=False):
+    def __init__(self, step_freq=100, act=False):
         """
         Initialize the RL Walker
 
         Input:
-        - comm_freq: communication frequency, in Hz
         - step_freq: step frequency, in Hz
         """
 
         # setup RobotClient
-        self.client = RobotClient(comm_freq)
+        self.client = RobotClient()
         self.act = act
         time.sleep(1.0)
 
@@ -76,27 +75,39 @@ class DemoNohlaStand:
         """
 
         # get states
-        joint_measured_position_urdf_deg = self.client.states["joint"]["position"].copy()
-        joint_measured_velocity_urdf_deg = self.client.states["joint"]["velocity"].copy()
+        joint_measured_position_urdf_deg = self.client.states["joint"][
+            "position"
+        ].copy()
+        joint_measured_velocity_urdf_deg = self.client.states["joint"][
+            "velocity"
+        ].copy()
 
-        controlled_joints = self.algorithm_nohla_stand_control_model.index_of_joints_real_robot
+        controlled_joints = self.model.index_of_joints_real_robot
 
         # prepare input
         joint_measured_position_nohla_urdf = np.zeros(len(controlled_joints))
         joint_measured_velocity_nohla_urdf = np.zeros(len(controlled_joints))
 
-        joint_measured_position_nohla_urdf = np.deg2rad(joint_measured_position_urdf_deg)[controlled_joints]
-        joint_measured_velocity_nohla_urdf = np.deg2rad(joint_measured_velocity_urdf_deg)[controlled_joints]
+        joint_measured_position_nohla_urdf = np.deg2rad(
+            joint_measured_position_urdf_deg
+        )[controlled_joints]
+        joint_measured_velocity_nohla_urdf = np.deg2rad(
+            joint_measured_velocity_urdf_deg
+        )[controlled_joints]
 
         # run algorithm
-        _, _, joint_target_position_nohla_urdf = self.algorithm_nohla_stand_control_model.run(
+        _, _, joint_target_position_nohla_urdf = self.model.run(
             joint_measured_position_urdf=joint_measured_position_nohla_urdf,
             joint_measured_velocity_urdf=joint_measured_velocity_nohla_urdf,
         )  # [rad]
 
-        joint_target_position_nohla_urdf_deg = np.rad2deg(joint_target_position_nohla_urdf)
+        joint_target_position_nohla_urdf_deg = np.rad2deg(
+            joint_target_position_nohla_urdf
+        )
         joint_target_position_deg = np.zeros_like(joint_measured_position_urdf_deg)
-        joint_target_position_deg[controlled_joints] = joint_target_position_nohla_urdf_deg
+        joint_target_position_deg[controlled_joints] = (
+            joint_target_position_nohla_urdf_deg
+        )
 
         if self.act:
             self.client.move_joints(ControlGroup.ALL, joint_target_position_deg, 0.0)
@@ -104,8 +115,8 @@ class DemoNohlaStand:
         return joint_target_position_deg
 
 
-def main(comm_freq: int = 400, step_freq: int = 100, act: bool = False):
-    walker = DemoNohlaStand(comm_freq=comm_freq, step_freq=step_freq, act=act)
+def main(step_freq: int = 100, act: bool = False):
+    walker = DemoNohlaStand(step_freq=step_freq, act=act)
 
     # start the scheduler
     schedule(walker.step, interval=1 / step_freq)

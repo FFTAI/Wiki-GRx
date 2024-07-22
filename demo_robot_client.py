@@ -16,7 +16,8 @@ log = console.log
 print = console.print
 
 
-FREQUENCY = 150 # Set control frequency, could set any number below 400Hz
+FREQUENCY = 150  # Set control frequency, could set any number below 400Hz
+
 
 # The enable function results in the motor being operable.
 def task_enable(client: RobotClient):
@@ -61,12 +62,14 @@ def task_print_states(client: RobotClient):
     print(table)
 
 
-'''
+"""
 Move_joint function:
 Three argument: joint position, time duration for movement, and blocking
 Notice: Could access other funciton while blcoking = True
 time duration will change the robot moving speed, it means the time that robot take to finish the task
-'''
+"""
+
+
 # Move joint to default position
 def task_move_to_default(client: RobotClient):
     client.set_enable(True)
@@ -78,6 +81,7 @@ def task_move_to_default(client: RobotClient):
         2.0,
         blocking=False,
     )
+
 
 # Similar to move_to_default, move left arm to default position
 def task_move_left_arm_to_default(client: RobotClient):
@@ -94,13 +98,13 @@ def task_move_left_arm_to_default(client: RobotClient):
 
 # Recording the movement of the robot joint as a npy file
 def record(client: RobotClient):
-    '''
+    """
     How to use the record function:
     1. Move to the start position and press enter to set the start position.
     2. Press enter to start recording; robot arms can move freely.
     3. Move to the final position and press enter again to finish recording.
     4. The trajectory will be stored as a npy file; use play to replay it.
-    '''
+    """
     traj = []
     client.set_enable(False)
 
@@ -120,7 +124,7 @@ def record(client: RobotClient):
                     print(sensor_type + "/" + sensor_name, sensor_reading.tolist())
     else:
         return
-    
+
     # Confirm if the user wants to start recording
     time.sleep(0.5)
     reply = Confirm.ask("Start recording?")
@@ -132,11 +136,11 @@ def record(client: RobotClient):
     client.set_enable(False)
     time.sleep(1)
     event = threading.Event()
-    '''
+    """
     Two threads aiming to:
     1. Keep adding the joint positions to the traj list.
     2. Prompt the user to stop recording.
-    '''
+    """
 
     # inner_task used for keep recording the trjactory
     def inner_task():
@@ -165,6 +169,7 @@ def record(client: RobotClient):
         np.save("record.npy", traj)
         return traj
 
+
 # Call record function
 def task_record(client: RobotClient):
     traj = record(client)
@@ -173,12 +178,12 @@ def task_record(client: RobotClient):
 
 # Replay the task recorded in the record function
 def play(recorded_traj: list[np.ndarray], client: RobotClient):
-    '''
+    """
     Move_joint function:
     Three argument: joint position, time duration for movement, and blocking
     Notice: Could access other funciton while blcoking = True
     time duration will change the robot moving speed, it means the time that robot take to finish the task
-    '''
+    """
 
     client.set_enable(True)
     time.sleep(1)
@@ -194,6 +199,7 @@ def play(recorded_traj: list[np.ndarray], client: RobotClient):
     time.sleep(1)
     client.set_enable(False)
 
+
 # Call play function
 def task_play(client: RobotClient):
     # Load npy file repaly the trajectory recorded from record function
@@ -206,7 +212,7 @@ def task_abort(client: RobotClient):
     client.abort()
 
 
-# List all the links from robot URDF 
+# List all the links from robot URDF
 def task_list_frames(client: RobotClient):
     frames = client.list_frames()
     print(frames)
@@ -229,25 +235,25 @@ def task_exit(client: RobotClient):
 
 
 if __name__ == "__main__":
-    client = RobotClient(FREQUENCY)
+    client = RobotClient()
     time.sleep(0.5)
     while True:
         task = Prompt.ask(
             "What do you want the :robot: to do?",
             choices=[
-                "enable", # The enable function results in the motor being operable.
-                "disable", # The disable function results in the motor being inoperable.
-                "set_home", # Get sensor offsets and save to `sensor_offset.json`, it could be used to calibrating all the absolute encoder
-                "set_gains", # Get PD parameter of the motor
-                "reboot", # Reboot all the motor and go back to zero position
-                "print_states", # Print out the motor status and information
-                "move_to_default", # Move joint to default position
-                "record", # Recording the movement of the robot joint as a npy file
-                "play", # Replay the task recorded in the record.npy
-                "abort", # Stop any movement that robot is doing right now
-                "list_frames",  # List all the links and joint from robot URDF 
-                "get_transform", # Get Transformation from one link to another one
-                "exit", # Exit the client
+                "enable",  # The enable function results in the motor being operable.
+                "disable",  # The disable function results in the motor being inoperable.
+                "set_home",  # Get sensor offsets and save to `sensor_offset.json`, it could be used to calibrating all the absolute encoder
+                "set_gains",  # Get PD parameter of the motor
+                "reboot",  # Reboot all the motor and go back to zero position
+                "print_states",  # Print out the motor status and information
+                "move_to_default",  # Move joint to default position
+                "record",  # Recording the movement of the robot joint as a npy file
+                "play",  # Replay the task recorded in the record.npy
+                "abort",  # Stop any movement that robot is doing right now
+                "list_frames",  # List all the links and joint from robot URDF
+                "get_transform",  # Get Transformation from one link to another one
+                "exit",  # Exit the client
             ],
         )
         if task == "enable":

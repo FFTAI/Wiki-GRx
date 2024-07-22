@@ -1,4 +1,3 @@
-from pathlib import Path
 import time
 
 import numpy as np
@@ -15,9 +14,8 @@ class DemoNohlaRLWalk:
 
     def __init__(
         self,
-        comm_freq: int = 400,
         step_freq: int = 100,
-        model_dir: Path | str | None = None,
+        model_dir: str = "",
         act: bool = False,
     ):
         """
@@ -29,7 +27,7 @@ class DemoNohlaRLWalk:
         """
 
         # setup RobotClient
-        self.client = RobotClient(comm_freq)
+        self.client = RobotClient()
         self.act = act
         time.sleep(1.0)
 
@@ -52,7 +50,7 @@ class DemoNohlaRLWalk:
 
         # algorithm
         algorithm_control_period = 1.0 / step_freq
-        if model_dir is not None:
+        if model_dir is not None and model_dir != "":
             self.model = FourierGR1NohlaRLWalkControlModel(
                 dt=algorithm_control_period,
                 decimation=int((1 / 100) / algorithm_control_period),
@@ -171,12 +169,8 @@ class DemoNohlaRLWalk:
             )
 
 
-def main(
-    comm_freq: int = 400, step_freq: int = 100, act: bool = False, model_dir: str = ""
-):
-    walker = DemoNohlaRLWalk(
-        comm_freq=comm_freq, step_freq=step_freq, act=act, model_dir=model_dir
-    )
+def main(step_freq: int = 100, act: bool = False, model_dir: str = ""):
+    walker = DemoNohlaRLWalk(step_freq=step_freq, act=act, model_dir=model_dir)
 
     # start the scheduler
     schedule(walker.step, interval=1 / step_freq)
