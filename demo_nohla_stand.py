@@ -30,7 +30,7 @@ class DemoNohlaStand:
 
         # algorithm
         algorithm_control_period = 1.0 / step_freq
-        self.algorithm_nohla_stand_control_model = FourierGR1NohlaStandControlModel(dt=algorithm_control_period)
+        self.model = FourierGR1NohlaStandControlModel(dt=algorithm_control_period)
 
     def set_gains(self):
         """
