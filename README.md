@@ -138,16 +138,19 @@ This saves sensor offsets to `sensor_offset.json`.
     ```
     Demo result:
 
-    <!-- ![RL_Stand_result](pictures/GIF/RL_stand.gif) -->
+    ![RL_Stand_result](pictures/GIF/RL_stand.gif)
 
 
 3. **Run the walking demo:**
+
+    First, you need to run `demo_nohla_stand.py` to get similar results as shown above. Then, place the robot on the ground and run the following code. Do not forget to ensure the robot is balanced before starting to walk.
+    
     ```bash
-    python demo_nohla_walk.py --model-dir ./data/nohla_rl_walk --act
+    python demo_nohla_rl_walk.py --model-dir ./data/nohla_rl_walk --act
     ```
     Demo result:
 
-    <!-- ![RL_Stand_result](pictures/GIF/RL_walk.gif) -->
+    ![RL_Stand_result](pictures/GIF/RL_walk.gif)
 
 Now your humanoid robot should be up and walking! 🦾🚶‍♂️ 
 
