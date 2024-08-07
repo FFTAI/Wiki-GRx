@@ -163,4 +163,4 @@ Enjoy exploring the fascinating world of humanoid robotics with `fourier-grx`! ð
 
 1.  It is suggest that run and undertand ``demo_robot_client.py`` first to know how it works.
 <br>
-2.  By then following [this guide](Demo_develop_guide.md) to develop you new demo.
+2.  By then following [this guide] (Demo_develop_guide.md) to develop you new demo.
