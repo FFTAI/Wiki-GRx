@@ -1,4 +1,7 @@
 # Change Logs
+- **2024-8-08**
+    - README updates:
+        - Remove the guide for new demo development.
 - **2024-8-07**
     - README updates:
         - Updated the `REAME.md`. Adding guide for new demo development.
