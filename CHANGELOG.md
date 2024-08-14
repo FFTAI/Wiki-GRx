@@ -1,4 +1,7 @@
 # Change Logs
+- **2024-8-14**
+    - Demo updates:
+        - Added a new demo `demo_move_hand` to demonstrate how to control the dexterous hand.
 - **2024-8-08**
     - README updates:
         - Remove the guide for new demo development.
