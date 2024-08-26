@@ -65,7 +65,7 @@ def task_print_states(client: RobotClient):
 """
 Move_joint function:
 Three argument: joint position, time duration for movement, and blocking
-Notice: Could access other funciton while blcoking = True
+Notice: Could access other funciton while blcoking = False
 time duration will change the robot moving speed, it means the time that robot take to finish the task
 """
 
