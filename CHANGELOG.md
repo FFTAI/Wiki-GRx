@@ -1,4 +1,8 @@
 # Change Logs
+- **2024-10-8**:
+    - Repository migration:
+        - Removed README.md and demo files from the old repository.
+        - Updated the `README.md`. Added migration notification.
 - **2024-8-14**
     - Demo updates:
         - Added a new demo `demo_move_hand` to demonstrate how to control the dexterous hand.
